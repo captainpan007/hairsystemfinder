@@ -14,6 +14,16 @@ if (!API_KEY) {
 
 const fs = require('fs');
 const path = require('path');
+const nodeFetch = require('node-fetch');
+const { HttpsProxyAgent } = require('hpagent');
+
+// Use system proxy if available
+const PROXY_URL = process.env.HTTPS_PROXY || process.env.HTTP_PROXY || 'http://127.0.0.1:7890';
+const proxyAgent = new HttpsProxyAgent({ proxy: PROXY_URL });
+console.log(`Using proxy: ${PROXY_URL}`);
+
+// Proxy-enabled fetch
+const fetch = (url, opts = {}) => nodeFetch(url, { ...opts, agent: proxyAgent });
 
 const SEARCH_QUERIES = [
   'hair system salon',
