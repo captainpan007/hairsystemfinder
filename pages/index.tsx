@@ -13,6 +13,8 @@ const POPULAR_CITIES = [
 export default function Home() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [subEmail, setSubEmail] = useState('');
+  const [subStatus, setSubStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,19 +118,44 @@ export default function Home() {
           <div className="max-w-md mx-auto text-center">
             <h2 className="text-xl font-bold mb-2">Get notified when we add salons in your city</h2>
             <p className="text-gray-400 text-sm mb-6">No spam, just updates.</p>
-            <form className="flex">
-              <input
-                type="email"
-                placeholder="your@email.com"
-                className="flex-1 px-4 py-3 rounded-l-lg bg-white text-gray-900 placeholder-gray-500 focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-r-lg font-medium transition-colors"
+            {subStatus === 'done' ? (
+              <p className="text-green-400 font-medium">You&apos;re subscribed!</p>
+            ) : (
+              <form
+                className="flex"
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  if (!subEmail) return;
+                  setSubStatus('sending');
+                  try {
+                    const res = await fetch('/api/subscribe', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email: subEmail }),
+                    });
+                    setSubStatus(res.ok ? 'done' : 'error');
+                  } catch {
+                    setSubStatus('error');
+                  }
+                }}
               >
-                Notify Me
-              </button>
-            </form>
+                <input
+                  type="email"
+                  value={subEmail}
+                  onChange={(e) => setSubEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  className="flex-1 px-4 py-3 rounded-l-lg bg-white text-gray-900 placeholder-gray-500 focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  disabled={subStatus === 'sending'}
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-r-lg font-medium transition-colors"
+                >
+                  {subStatus === 'sending' ? '...' : 'Notify Me'}
+                </button>
+              </form>
+            )}
+            {subStatus === 'error' && <p className="text-red-400 text-sm mt-2">Something went wrong. Try again.</p>}
           </div>
         </section>
 

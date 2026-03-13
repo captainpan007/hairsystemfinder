@@ -1,4 +1,5 @@
 import { GetStaticProps, GetStaticPaths } from 'next';
+import { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import salonsData from '@/data/salons.json';
@@ -214,18 +215,7 @@ export default function SalonPage({ salon }: SalonPageProps) {
 
           {/* Claim CTA */}
           {!salon.claimed && (
-            <div className="mt-8 p-6 bg-gray-800 rounded-lg border border-gray-700 text-center">
-              <h3 className="text-lg font-semibold mb-2">Own this studio?</h3>
-              <p className="text-gray-400 text-sm mb-4">
-                Claim your listing to update info, add services, and connect with clients.
-              </p>
-              <a
-                href={`mailto:hello@hairsystemfinder.com?subject=Claim: ${encodeURIComponent(salon.name)}&body=I'd like to claim the listing for ${encodeURIComponent(salon.name)} at ${encodeURIComponent(salon.address)}.`}
-                className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
-              >
-                Claim This Listing
-              </a>
-            </div>
+            <ClaimSection salonName={salon.name} salonId={salon.id} />
           )}
         </main>
 
@@ -234,6 +224,77 @@ export default function SalonPage({ salon }: SalonPageProps) {
         </footer>
       </div>
     </>
+  );
+}
+
+function ClaimSection({ salonName, salonId }: { salonName: string; salonId: string }) {
+  const [showForm, setShowForm] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus('sending');
+    const form = e.currentTarget;
+    const data = {
+      name: (form.elements.namedItem('claimName') as HTMLInputElement).value,
+      email: (form.elements.namedItem('claimEmail') as HTMLInputElement).value,
+      phone: (form.elements.namedItem('claimPhone') as HTMLInputElement).value,
+      salonName,
+      salonId,
+    };
+    try {
+      const res = await fetch('/api/claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        setStatus('sent');
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
+  };
+
+  if (status === 'sent') {
+    return (
+      <div className="mt-8 p-6 bg-green-900/30 rounded-lg border border-green-700 text-center">
+        <p className="text-green-400 font-semibold">Claim request sent! We&apos;ll review and get back to you.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-8 p-6 bg-gray-800 rounded-lg border border-gray-700 text-center">
+      <h3 className="text-lg font-semibold mb-2">Own this studio?</h3>
+      <p className="text-gray-400 text-sm mb-4">
+        Claim your listing to update info, add services, and connect with clients.
+      </p>
+      {!showForm ? (
+        <button
+          onClick={() => setShowForm(true)}
+          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
+        >
+          Claim This Listing
+        </button>
+      ) : (
+        <form onSubmit={handleSubmit} className="max-w-sm mx-auto text-left space-y-3">
+          <input name="claimName" required placeholder="Your name" className="w-full px-3 py-2 bg-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <input name="claimEmail" type="email" required placeholder="Your email" className="w-full px-3 py-2 bg-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <input name="claimPhone" type="tel" placeholder="Phone (optional)" className="w-full px-3 py-2 bg-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          <button
+            type="submit"
+            disabled={status === 'sending'}
+            className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg font-medium transition-colors text-sm"
+          >
+            {status === 'sending' ? 'Sending...' : 'Submit Claim'}
+          </button>
+          {status === 'error' && <p className="text-red-400 text-sm">Something went wrong. Try again.</p>}
+        </form>
+      )}
+    </div>
   );
 }
 
