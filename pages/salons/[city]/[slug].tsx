@@ -54,7 +54,7 @@ export default function SalonPage({ salon }: SalonPageProps) {
   return (
     <>
       <Head>
-        <title>{salon.name} — {salon.city_display} | HairSystemFinder</title>
+        <title>{salon.name} - Hair System Specialist in {salon.city_display} | HairSystemFinder</title>
         <meta name="description" content={`${salon.name} in ${salon.city_display}. Hair system specialist — services, pricing, and contact info.`} />
       </Head>
 

@@ -26,9 +26,10 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>HairSystemFinder — Find Your Hair System Studio</title>
-        <meta name="description" content="The first directory dedicated to hair system specialists. Find vetted salons near you." />
+        <title>Find Hair System Specialists Near You | HairSystemFinder</title>
+        <meta name="description" content="The first directory dedicated to hair system specialists. Find vetted salons for hair replacement, maintenance, and styling near you." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="canonical" href="https://hairsystemfinder.com" />
       </Head>
 
       <div className="min-h-screen bg-[#1a2332] text-white">

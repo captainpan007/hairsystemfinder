@@ -1,0 +1,37 @@
+请自动完成以下全部任务，遇到错误自动修复，全程不需要我确认，一直跑到最后：
+
+【数据抓取】
+1. 运行 node scripts/scrape-gmaps.js --dry-run 测试
+2. 没报错就运行 node scripts/scrape-gmaps.js 抓取全部5个城市
+3. 有报错就自动修复再重跑
+
+【页面开发】
+4. 开发 pages/index.tsx 首页：
+   - 深色navy背景(#1a2332)
+   - Hero: "Find Your Studio" + "50 vetted specialists. Wearers only."
+   - 城市搜索框
+   - 快捷城市入口：NYC, LA, Houston, Dallas, Chicago
+   - 邮件订阅表单
+
+5. 开发 pages/salons/[city].tsx 城市列表页：
+   - 读取 salons.json 按城市过滤
+   - 沙龙卡片网格
+   - 3个筛选器：服务类型、接受外购、价格区间
+
+6. 开发 pages/salons/[city]/[slug].tsx 沙龙详情页：
+   - 首屏显示"接受外购"标志
+   - 电话click-to-call
+   - Google Maps embed
+   - "Claim this listing" 认领按钮
+
+【API路由】
+7. 创建 pages/api/claim.ts：收到认领表单后发邮件给 xiongmaopan7@gmail.com
+8. 创建 pages/api/subscribe.ts：收邮件订阅后保存到 data/subscribers.json
+
+【收尾】
+9. npm run build 确认无报错
+10. 每完成一个模块就 git add -A && git commit
+11. 更新 DEV_LOG.md 记录所有完成内容
+12. 最后终端显示 "✅ 全部完成，等待 Alex 回来部署上线"
+
+Be concise, no acknowledgment.
