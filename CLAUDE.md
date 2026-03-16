@@ -9,16 +9,26 @@
 
 ---
 
+## 基础设施
+
+- **URL**：https://hairsystemfinder.com
+- **GitHub**：captainpan007/hairsystemfinder
+- **Railway**：hairsystemfinder-production.up.railway.app
+- **本地路径**：F:\claude开发项目\hairsystemfinder
+- **Cloudflare**：hairsystemfinder.com DNS 管理，Email Routing 已开启
+- **Email Routing**：hello@hairsystemfinder.com → xiongmaopan7@gmail.com
+- **Google Cloud Project**：aqueous-cabinet-410309
+
 ## 技术栈
 
-- **框架**：Next.js 14（SSG，`getStaticProps` + `getStaticPaths`）
+- **框架**：Next.js SSG（`getStaticProps` + `getStaticPaths`）
 - **数据**：`data/salons.json`（无数据库，无后端）
 - **搜索**：fuse.js（客户端模糊搜索）
-- **地图**：Google Maps Embed API（静态 embed，免费）
-- **邮件**：Resend（认领通知 + 用户订阅）
+- **地图**：Google Maps 链接跳转（无 embed，无 API key 依赖）
+- **邮件**：Resend（认领通知 + 用户订阅 + outreach）
 - **部署**：Railway（Nixpacks，不用 Dockerfile）
-- **域名**：hairsystemfinder.com（Namecheap 注册，Railway 绑定）
-- **分析**：Google Analytics 4 + Hotjar（追踪搜索行为和 click-to-call）
+- **域名**：hairsystemfinder.com（Cloudflare DNS）
+- **分析**：Umami Cloud（替代 GA4 + Hotjar）
 - **样式**：TailwindCSS
 
 ---
@@ -182,17 +192,16 @@ hairsystemfinder.com
 ## 环境变量清单
 
 ```env
-# Google Maps
+# Google Maps（当前未使用，地图改为链接跳转）
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
 
-# Resend（邮件）
+# Resend（邮件）— domain verified ✅
 RESEND_API_KEY=
 RESEND_FROM_EMAIL=hello@hairsystemfinder.com
 ADMIN_EMAIL=xiongmaopan7@gmail.com
 
-# Analytics
-NEXT_PUBLIC_GA_MEASUREMENT_ID=
-NEXT_PUBLIC_HOTJAR_ID=
+# Umami Analytics
+# Website ID: cbd08d15-4ade-4819-a0d9-65a2718f190d（已硬编码在 _document.tsx）
 ```
 
 ---
