@@ -76,6 +76,14 @@ export default function SalonPage({ salon }: SalonPageProps) {
         </header>
 
         <main className="max-w-3xl mx-auto px-4 py-8">
+          {/* Back link */}
+          <Link
+            href={`/salons/${salon.city}`}
+            className="inline-block text-sm text-gray-400 hover:text-white transition-colors mb-4"
+          >
+            &larr; Back to {salon.city_display} salons
+          </Link>
+
           {/* Name + Rating */}
           <div className="flex items-start justify-between mb-6">
             <div>
@@ -103,11 +111,27 @@ export default function SalonPage({ salon }: SalonPageProps) {
 
           {/* 1. Accepts Outside Systems — most important */}
           <div className={`p-4 rounded-lg mb-6 ${salon.accepts_outside_systems ? 'bg-green-900/30 border border-green-700' : 'bg-gray-800 border border-gray-700'}`}>
-            <div className="font-semibold text-lg">
+            <div className="font-semibold text-lg flex items-center gap-2">
               {salon.accepts_outside_systems ? (
-                <span className="text-green-400">✓ Accepts Outside Hair Systems</span>
+                <>
+                  <span className="text-green-400">✓ Accepts Outside Hair Systems</span>
+                  <span className="relative group cursor-help">
+                    <span className="text-gray-400 text-sm">&#9432;</span>
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-60 p-2 bg-gray-900 text-gray-200 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                      This studio accepts hair systems purchased elsewhere.
+                    </span>
+                  </span>
+                </>
               ) : (
-                <span className="text-gray-400">Uses In-House Systems Only</span>
+                <>
+                  <span className="text-gray-400">Uses In-House Systems Only</span>
+                  <span className="relative group cursor-help">
+                    <span className="text-gray-500 text-sm">&#9432;</span>
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-2 bg-gray-900 text-gray-200 text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                      This studio uses its own brand of hair systems and does not work with outside hair pieces you bring in.
+                    </span>
+                  </span>
+                </>
               )}
             </div>
           </div>
