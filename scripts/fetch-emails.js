@@ -15,7 +15,7 @@ const path = require('path');
 
 const OUTREACH_FILE = path.join(__dirname, '..', 'data', 'outreach.json');
 const DELAY_MS = 500;
-const TIMEOUT_MS = 3000;
+const TIMEOUT_MS = 4000;
 
 const dryRun = process.argv.includes('--dry-run');
 
