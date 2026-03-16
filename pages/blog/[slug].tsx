@@ -43,7 +43,7 @@ export default function BlogPost({ post }: BlogPageProps) {
         <meta name="description" content={post.description} />
       </Head>
 
-      <div className="bg-[#1a2332] text-white min-h-screen">
+      <div className="bg-[#1a2332] text-white" style={{ minHeight: 'auto' }}>
         <header className="py-4 px-4 border-b border-gray-700">
           <div className="max-w-3xl mx-auto flex items-center justify-between">
             <Link href="/" className="text-lg font-bold hover:text-blue-400 transition-colors">

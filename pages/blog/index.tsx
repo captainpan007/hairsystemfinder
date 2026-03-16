@@ -22,7 +22,7 @@ export default function BlogIndex() {
         <meta name="description" content="City-by-city guides to finding the best hair system salons. Pricing, tips, and specialist directories." />
       </Head>
 
-      <div className="bg-[#1a2332] text-white">
+      <div className="bg-[#1a2332] text-white" style={{ minHeight: 'auto' }}>
         <header className="py-4 px-4 border-b border-gray-700">
           <div className="max-w-3xl mx-auto flex items-center justify-between">
             <Link href="/" className="text-lg font-bold hover:text-blue-400 transition-colors">
