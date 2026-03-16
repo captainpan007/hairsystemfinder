@@ -49,10 +49,7 @@ const SYSTEM_LABELS: Record<string, string> = {
 };
 
 export default function SalonPage({ salon }: SalonPageProps) {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  const mapsEmbedUrl = apiKey
-    ? `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${encodeURIComponent(salon.address)}`
-    : null;
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(salon.address)}`;
 
   return (
     <>
@@ -180,30 +177,14 @@ export default function SalonPage({ salon }: SalonPageProps) {
                 Website
               </a>
             )}
-          </div>
-
-          {/* 4. Map */}
-          <div className="mb-6">
-            {mapsEmbedUrl ? (
-              <iframe
-                width="100%"
-                height="300"
-                style={{ border: 0, borderRadius: '0.5rem' }}
-                loading="lazy"
-                allowFullScreen
-                referrerPolicy="no-referrer-when-downgrade"
-                src={mapsEmbedUrl}
-              />
-            ) : (
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(salon.address)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full h-[300px] bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-colors"
-              >
-                View on Google Maps &rarr;
-              </a>
-            )}
+            <a
+              href={mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition-colors"
+            >
+              View on Google Maps
+            </a>
           </div>
 
           {/* 5. Price Range */}
