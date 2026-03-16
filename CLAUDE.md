@@ -249,6 +249,30 @@ ADMIN_EMAIL=xiongmaopan7@gmail.com
 
 ---
 
+## Blog System
+
+- 生成脚本: scripts/generate-blog.js（需要 ANTHROPIC_API_KEY，10城市，跳过已存在文件）
+- 数据目录: data/blog/*.json（10个城市已生成）
+- 页面: pages/blog/index.tsx（列表）+ pages/blog/[slug].tsx（详情）
+- URL pattern: /blog/{city-slug}
+
+---
+
+## 运营节奏（建议）
+
+- 每天：检查 Gmail 有无沙龙回复 + 看 dashboard.html 数据
+- 每周：根据数据决定下一步动作
+
+---
+
+## 二批待办
+
+- 扩展更多城市的沙龙数据和 blog 页面
+- Claim This Listing 功能正式化（表单 + 邮件通知）
+- 客服对话框：暂缓，等日均 50+ 访客再考虑
+
+---
+
 ## 代理设置（Claude Code 启动必须）
 
 ```powershell
