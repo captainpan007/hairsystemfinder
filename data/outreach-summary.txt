@@ -1,0 +1,12 @@
+Outreach Summary
+================
+Total salons eligible (has phone or website): 52/52
+With website: 52
+With phone only (no website): 0
+
+By city:
+  Los Angeles: 15
+  Dallas: 12
+  Houston: 10
+  New York: 9
+  Chicago: 6

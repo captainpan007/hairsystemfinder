@@ -49,7 +49,10 @@ const SYSTEM_LABELS: Record<string, string> = {
 };
 
 export default function SalonPage({ salon }: SalonPageProps) {
-  const mapsEmbedUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${encodeURIComponent(salon.address)}`;
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const mapsEmbedUrl = apiKey
+    ? `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${encodeURIComponent(salon.address)}`
+    : null;
 
   return (
     <>
@@ -156,17 +159,19 @@ export default function SalonPage({ salon }: SalonPageProps) {
           </div>
 
           {/* 4. Map */}
-          <div className="mb-6">
-            <iframe
-              width="100%"
-              height="300"
-              style={{ border: 0, borderRadius: '0.5rem' }}
-              loading="lazy"
-              allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
-              src={mapsEmbedUrl}
-            />
-          </div>
+          {mapsEmbedUrl && (
+            <div className="mb-6">
+              <iframe
+                width="100%"
+                height="300"
+                style={{ border: 0, borderRadius: '0.5rem' }}
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+                src={mapsEmbedUrl}
+              />
+            </div>
+          )}
 
           {/* 5. Price Range */}
           {salon.price_range && (
