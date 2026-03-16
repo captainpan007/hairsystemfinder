@@ -77,6 +77,10 @@ export default function Home() {
             <a href="#subscribe" className="hover:text-white transition-colors underline">
               Add Your Studio
             </a>
+            <span>·</span>
+            <a href="/blog" className="hover:text-white transition-colors underline">
+              City Guides
+            </a>
           </div>
         </section>
 
@@ -118,6 +122,9 @@ export default function Home() {
                 </a>
               ))}
             </div>
+            <a href="/blog" className="mt-6 inline-block text-sm text-gray-500 hover:text-gray-300 transition-colors">
+              Read our city guides &rarr;
+            </a>
           </div>
         </section>
 
@@ -169,6 +176,13 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="py-8 px-4 border-t border-gray-700 text-center text-gray-500 text-sm">
+          <div className="flex justify-center gap-2 mb-2">
+            <a href="#cities" className="hover:text-gray-300 transition-colors underline">Browse All</a>
+            <span>·</span>
+            <a href="/blog" className="hover:text-gray-300 transition-colors underline">City Guides</a>
+            <span>·</span>
+            <a href="#subscribe" className="hover:text-gray-300 transition-colors underline">Add Your Studio</a>
+          </div>
           © 2026 HairSystemFinder. Built by wearers, for wearers.
         </footer>
       </div>
