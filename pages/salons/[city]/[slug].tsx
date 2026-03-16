@@ -183,8 +183,8 @@ export default function SalonPage({ salon }: SalonPageProps) {
           </div>
 
           {/* 4. Map */}
-          {mapsEmbedUrl && (
-            <div className="mb-6">
+          <div className="mb-6">
+            {mapsEmbedUrl ? (
               <iframe
                 width="100%"
                 height="300"
@@ -194,8 +194,17 @@ export default function SalonPage({ salon }: SalonPageProps) {
                 referrerPolicy="no-referrer-when-downgrade"
                 src={mapsEmbedUrl}
               />
-            </div>
-          )}
+            ) : (
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(salon.address)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full h-[300px] bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+              >
+                View on Google Maps &rarr;
+              </a>
+            )}
+          </div>
 
           {/* 5. Price Range */}
           {salon.price_range && (
