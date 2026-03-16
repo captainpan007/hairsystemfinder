@@ -38,16 +38,44 @@
 - Added "← Back to [City] salons" link on detail page
 - Added info tooltips for outside/in-house system labels
 
-## 2026-03-16 — Outreach & Analytics
-- Created scripts/fetch-emails.js: scraped 19 salon emails from websites
-- Created scripts/outreach.js: batch email sender via Resend API
-- Generated data/outreach.json with 52 salon outreach drafts
-- Added Umami analytics (cloud.umami.is) to all pages
-- Resend domain verification pending for hello@hairsystemfinder.com
+## 2026-03-16 — Launch Day
+
+### 上线完成
+- 域名购买 hairsystemfinder.com，Namecheap NS → Cloudflare
+- Railway 绑定自定义域名，HTTPS 正常
+- Google Search Console 验证 + Sitemap 提交
+- Reddit r/HairLoss + r/malepatternbaldness 发帖
+- IndieHackers 发帖
+
+### Bug 修复
+- Hero 空白、NYC/LA 路由、详情页 error page 修复
+- Google Maps embed 改为 "View on Google Maps" 纯链接（build-time env var 无法注入）
+- 底部白色空白：html/body/#__next 强制 background: #1a2332
+
+### 邮件系统搭建
+- Cloudflare Email Routing: hello@hairsystemfinder.com → Gmail ✅
+- Resend 域名验证: hairsystemfinder.com ✅（Auto configure via Cloudflare OAuth）
+- RESEND_FROM_EMAIL 更新为 hello@hairsystemfinder.com
+- 冷推邮件首批发送: 19/52 封，0 失败 ✅
+
+### 数据收集
+- outreach.json: 52 家沙龙（Google Places 抓取）
+- fetch-emails.js 跑完: 19 家有邮箱，33 家网站不公开邮箱
+
+### Analytics 接入
+- Umami Cloud 注册，添加 hairsystemfinder.com
+- tracking script 加入 pages/_document.tsx，全站生效
+- 本地 dashboard.html 制作完成
+
+### 待办
+- [ ] 手动补充 33 家无邮箱沙龙的联系方式（从网站 Contact 页或 Google Maps）
+- [ ] 监控 Umami 看 Reddit/IH 带来的流量
+- [ ] 监控 hello@hairsystemfinder.com 等待沙龙回复
+- [ ] 下一批冷推（补充邮箱后）
 
 ## Current Status
 - **Live at**: https://hairsystemfinder.com
 - **Salons**: 52 across 5 cities (NYC 9, LA 15, Houston 10, Dallas 12, Chicago 6)
-- **Outreach**: 19 emails ready, pending Resend domain verification
+- **Outreach**: 19 封已发送 ✅
 - **Analytics**: Umami tracking active
-- **Next**: Verify Resend domain → send outreach batch → monitor metrics
+- **Next**: 监控流量 + 沙龙回复 → 补充邮箱 → 第二批冷推

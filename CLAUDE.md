@@ -189,6 +189,30 @@ hairsystemfinder.com
 
 ---
 
+## 服务状态
+
+- Resend domain: hairsystemfinder.com 已验证 ✅
+- Umami Analytics: script 已加入 pages/_document.tsx ✅
+- Google Maps: 改为 "View on Google Maps" 纯链接方案（无 API 依赖）
+
+---
+
+## Data Files
+
+- `data/outreach.json`: 52 家沙龙，19 有邮箱，33 无邮箱
+- `data/outreach_sent.json`: 记录已发送邮箱（防重复）
+- `scripts/outreach.js`: 冷推邮件脚本，`--dry-run` 预览，正式发送去掉参数
+- `scripts/fetch-emails.js`: 从沙龙网站抓取邮箱
+- `scripts/scrape-gmaps.js`: 从 Google Places API 抓取沙龙数据
+
+---
+
+## Dashboard
+
+- 本地看板: `dashboard.html`（双击打开，调 Umami API 显示实时数据）
+
+---
+
 ## 环境变量清单
 
 ```env
