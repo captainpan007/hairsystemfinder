@@ -34,12 +34,12 @@ export default function Home() {
 
       <div className="min-h-screen bg-[#1a2332] text-white">
         {/* Hero */}
-        <section className="flex flex-col items-center justify-center min-h-[70vh] px-4">
+        <section className="flex flex-col items-center justify-center py-20 px-4">
           <h1 className="text-5xl md:text-6xl font-bold text-center mb-4">
             Find Your Studio
           </h1>
           <p className="text-lg text-gray-300 mb-8 text-center">
-            50 vetted specialists. Wearers only.
+            52 vetted specialists. Wearers only.
           </p>
 
           {/* Search */}
