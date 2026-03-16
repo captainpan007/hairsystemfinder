@@ -52,7 +52,7 @@ export default function CityPage({ city, cityDisplay, salons }: CityPageProps) {
         <meta name="description" content={`Find hair system specialists in ${cityDisplay}. Browse vetted salons with ratings and contact info.`} />
       </Head>
 
-      <div className="min-h-screen bg-[#1a2332] text-white">
+      <div className="bg-[#1a2332] text-white">
         {/* Header */}
         <header className="py-4 px-4 border-b border-gray-700">
           <div className="max-w-5xl mx-auto flex items-center justify-between">
@@ -62,7 +62,7 @@ export default function CityPage({ city, cityDisplay, salons }: CityPageProps) {
           </div>
         </header>
 
-        <main className="max-w-5xl mx-auto px-4 py-8">
+        <main className="max-w-5xl mx-auto px-4 py-8 min-h-[50vh]">
           <h1 className="text-3xl font-bold mb-2">
             Hair System Salons in {cityDisplay}
           </h1>
