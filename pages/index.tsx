@@ -3,12 +3,18 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 
 const POPULAR_CITIES = [
-  { name: 'NYC', slug: 'new-york' },
-  { name: 'LA', slug: 'los-angeles' },
+  { name: 'New York', slug: 'new-york' },
+  { name: 'Los Angeles', slug: 'los-angeles' },
   { name: 'Houston', slug: 'houston' },
   { name: 'Dallas', slug: 'dallas' },
   { name: 'Chicago', slug: 'chicago' },
 ];
+
+const CITY_ALIASES: Record<string, string> = {
+  'nyc': 'new-york',
+  'ny': 'new-york',
+  'la': 'los-angeles',
+};
 
 export default function Home() {
   const router = useRouter();
@@ -19,7 +25,8 @@ export default function Home() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-    const slug = searchQuery.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    let slug = searchQuery.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    slug = CITY_ALIASES[slug] || slug;
     router.push(`/salons/${slug}`);
   };
 
