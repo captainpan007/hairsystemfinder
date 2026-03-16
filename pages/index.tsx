@@ -39,7 +39,7 @@ export default function Home() {
         <link rel="canonical" href="https://hairsystemfinder.com" />
       </Head>
 
-      <div className="min-h-screen bg-[#1a2332] text-white">
+      <div className="bg-[#1a2332] text-white">
         {/* Hero */}
         <section className="flex flex-col items-center justify-center py-24 px-4">
           <h1 className="text-5xl md:text-6xl font-bold text-center mb-4">

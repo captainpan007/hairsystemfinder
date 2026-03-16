@@ -61,7 +61,7 @@ export default function SalonPage({ salon }: SalonPageProps) {
         <meta name="description" content={`${salon.name} in ${salon.city_display}. Hair system specialist — services, pricing, and contact info.`} />
       </Head>
 
-      <div className="min-h-screen bg-[#1a2332] text-white">
+      <div className="bg-[#1a2332] text-white">
         {/* Header */}
         <header className="py-4 px-4 border-b border-gray-700">
           <div className="max-w-3xl mx-auto flex items-center gap-2 text-sm text-gray-400">
