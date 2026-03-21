@@ -1,5 +1,5 @@
 import { GetStaticProps, GetStaticPaths } from 'next';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import salonsData from '@/data/salons.json';
@@ -236,6 +236,9 @@ export default function SalonPage({ salon }: SalonPageProps) {
           {!salon.claimed && (
             <ClaimSection salonName={salon.name} salonId={salon.id} />
           )}
+
+          {/* Reviews */}
+          <ReviewSection salonId={salon.id} />
         </main>
 
         <footer className="py-8 px-4 border-t border-gray-700 text-center text-gray-500 text-sm">
@@ -312,6 +315,224 @@ function ClaimSection({ salonName, salonId }: { salonName: string; salonId: stri
           </button>
           {status === 'error' && <p className="text-red-400 text-sm">Something went wrong. Try again.</p>}
         </form>
+      )}
+    </div>
+  );
+}
+
+interface Review {
+  id: string;
+  visited: boolean;
+  accepts_outside: boolean;
+  rating: number;
+  comment: string;
+  created_at: string;
+}
+
+function StarRating({ value, onChange }: { value: number; onChange?: (v: number) => void }) {
+  const [hover, setHover] = useState(0);
+  return (
+    <span className="inline-flex gap-1">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <span
+          key={i}
+          className={`cursor-${onChange ? 'pointer' : 'default'} text-xl select-none ${
+            i <= (hover || value) ? 'opacity-100' : 'opacity-30'
+          }`}
+          onClick={() => onChange?.(i)}
+          onMouseEnter={() => onChange && setHover(i)}
+          onMouseLeave={() => onChange && setHover(0)}
+        >
+          ⭐
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function ReviewSection({ salonId }: { salonId: string }) {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [visited, setVisited] = useState(false);
+  const [acceptsOutside, setAcceptsOutside] = useState(false);
+  const [comment, setComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'sent' | 'error'>('idle');
+
+  useEffect(() => {
+    fetch(`/api/reviews?salonId=${encodeURIComponent(salonId)}`)
+      .then((r) => r.json())
+      .then((data) => setReviews(data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [salonId]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (rating === 0) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          salonId,
+          visited,
+          accepts_outside: acceptsOutside,
+          rating,
+          comment,
+        }),
+      });
+      if (res.ok) {
+        const newReview = await res.json();
+        setReviews((prev) => [...prev, newReview]);
+        setSubmitStatus('sent');
+        setShowForm(false);
+        setRating(0);
+        setVisited(false);
+        setAcceptsOutside(false);
+        setComment('');
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch {
+      setSubmitStatus('error');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const avgRating = reviews.length > 0
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : null;
+
+  return (
+    <div className="mt-8 border-t border-gray-700 pt-8">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold">
+          Community Reviews
+          {reviews.length > 0 && (
+            <span className="text-gray-400 text-sm font-normal ml-2">
+              ({reviews.length} review{reviews.length !== 1 ? 's' : ''} · avg {avgRating} ⭐)
+            </span>
+          )}
+        </h2>
+        {!showForm && submitStatus !== 'sent' && (
+          <button
+            onClick={() => setShowForm(true)}
+            className="text-sm px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+          >
+            Write a Review
+          </button>
+        )}
+      </div>
+
+      {submitStatus === 'sent' && (
+        <div className="mb-4 p-3 bg-green-900/30 rounded-lg border border-green-700 text-green-400 text-sm">
+          Thanks for your review!
+        </div>
+      )}
+
+      {/* Review Form */}
+      {showForm && (
+        <form onSubmit={handleSubmit} className="mb-6 p-4 bg-gray-800 rounded-lg border border-gray-700 space-y-4">
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Rating *</label>
+            <StarRating value={rating} onChange={setRating} />
+            {rating === 0 && (
+              <span className="text-gray-500 text-xs ml-2">Select a rating</span>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-4">
+            <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={visited}
+                onChange={(e) => setVisited(e.target.checked)}
+                className="rounded bg-gray-700 border-gray-600"
+              />
+              I&apos;ve visited this salon
+            </label>
+            <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={acceptsOutside}
+                onChange={(e) => setAcceptsOutside(e.target.checked)}
+                className="rounded bg-gray-700 border-gray-600"
+              />
+              They accepted my outside system
+            </label>
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-400 mb-1">Comment (optional)</label>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              maxLength={500}
+              rows={3}
+              placeholder="Share your experience..."
+              className="w-full px-3 py-2 bg-gray-700 rounded-lg text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+            />
+            <span className="text-gray-500 text-xs">{comment.length}/500</span>
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              type="submit"
+              disabled={submitting || rating === 0}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg text-sm font-medium transition-colors"
+            >
+              {submitting ? 'Submitting...' : 'Submit Review'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowForm(false)}
+              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+          {submitStatus === 'error' && (
+            <p className="text-red-400 text-sm">Something went wrong. Try again.</p>
+          )}
+        </form>
+      )}
+
+      {/* Review List */}
+      {loading ? (
+        <p className="text-gray-500 text-sm">Loading reviews...</p>
+      ) : reviews.length === 0 ? (
+        <p className="text-gray-500 text-sm">No reviews yet. Be the first to share your experience!</p>
+      ) : (
+        <div className="space-y-4">
+          {reviews.map((review) => (
+            <div key={review.id} className="p-4 bg-gray-800 rounded-lg border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <StarRating value={review.rating} />
+                <span className="text-gray-500 text-xs">{review.created_at}</span>
+              </div>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {review.visited && (
+                  <span className="text-xs px-2 py-0.5 bg-blue-900/40 text-blue-300 rounded-full">
+                    Visited
+                  </span>
+                )}
+                {review.accepts_outside && (
+                  <span className="text-xs px-2 py-0.5 bg-green-900/40 text-green-300 rounded-full">
+                    Accepts outside systems
+                  </span>
+                )}
+              </div>
+              {review.comment && (
+                <p className="text-gray-300 text-sm">{review.comment}</p>
+              )}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 one.txt
+
+# review data
+data/reviews.json
