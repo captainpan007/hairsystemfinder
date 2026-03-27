@@ -182,7 +182,10 @@ export default function Home() {
             <a href="/blog" className="hover:text-gray-300 transition-colors underline">City Guides</a>
             <span>·</span>
             <a href="#subscribe" className="hover:text-gray-300 transition-colors underline">Add Your Studio</a>
+            <span>·</span>
+            <a href="mailto:hello@hairsystemfinder.com" className="hover:text-gray-300 transition-colors underline">Contact</a>
           </div>
+          <p className="mb-2">For business inquiries: <a href="mailto:hello@hairsystemfinder.com" className="text-gray-300 hover:text-white underline">hello@hairsystemfinder.com</a></p>
           © 2026 HairSystemFinder. Built by wearers, for wearers.
         </footer>
       </div>
