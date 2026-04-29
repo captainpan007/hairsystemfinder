@@ -43,3 +43,9 @@ one.txt
 
 # review data
 data/reviews.json
+
+# outreach data (contains real emails / pitch templates / subscriber list — keep private)
+data/outreach.json
+data/outreach_sent.json
+data/outreach-summary.txt
+data/subscribers.json

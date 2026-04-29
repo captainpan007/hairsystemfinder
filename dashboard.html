@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HairSystemFinder — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f; --surface: #12121a; --border: #1e1e2e;
+    --amber: #f59e0b; --amber-dim: #78490a; --green: #10b981; --red: #ef4444;
+    --text: #e2e8f0; --muted: #64748b;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-display: 'Syne', sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:var(--font-mono); min-height:100vh; padding:32px; }
+  header { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; padding-bottom:20px; border-bottom:1px solid var(--border); }
+  .logo { font-family:var(--font-display); font-size:20px; font-weight:800; color:var(--amber); }
+  .logo span { color:var(--text); }
+  .header-links { display:flex; gap:12px; }
+  .header-links a { font-size:11px; color:var(--muted); text-decoration:none; padding:6px 12px; border:1px solid var(--border); transition:all 0.2s; }
+  .header-links a:hover { color:var(--amber); border-color:var(--amber-dim); }
+  .section-title { font-size:10px; text-transform:uppercase; letter-spacing:2px; color:var(--muted); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+  .quick-links { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px; }
+  .quick-link { background:var(--surface); border:1px solid var(--border); padding:14px 16px; text-decoration:none; color:var(--muted); font-size:11px; transition:all 0.2s; display:flex; flex-direction:column; gap:4px; }
+  .quick-link:hover { border-color:var(--amber-dim); color:var(--amber); }
+  .quick-link strong { font-size:13px; color:var(--text); font-family:var(--font-display); }
+  .panel { background:var(--surface); border:1px solid var(--border); padding:20px; margin-bottom:28px; }
+  .status-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); font-size:12px; }
+  .status-row:last-child { border-bottom:none; }
+  .dot { width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:8px; }
+  .dot.green { background:var(--green); box-shadow:0 0 6px var(--green); }
+  .dot.amber { background:var(--amber); box-shadow:0 0 6px var(--amber); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .badge { display:inline-block; padding:2px 8px; font-size:10px; border-radius:2px; letter-spacing:0.5px; }
+  .badge.green { background:rgba(16,185,129,0.15); color:var(--green); }
+  .badge.amber { background:rgba(245,158,11,0.15); color:var(--amber); }
+
+  /* Analytics cards */
+  .analytics-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:28px; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); padding:20px; text-align:center; }
+  .stat-card .label { font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin-bottom:8px; }
+  .stat-card .value { font-family:var(--font-display); font-size:28px; font-weight:800; color:var(--amber); }
+  .stat-card .sub { font-size:10px; color:var(--muted); margin-top:4px; }
+
+  /* Period selector */
+  .period-bar { display:flex; gap:8px; margin-bottom:16px; align-items:center; }
+  .period-btn { background:var(--surface); border:1px solid var(--border); color:var(--muted); font-family:var(--font-mono); font-size:11px; padding:6px 14px; cursor:pointer; transition:all 0.2s; }
+  .period-btn:hover { border-color:var(--amber-dim); color:var(--amber); }
+  .period-btn.active { border-color:var(--amber); color:var(--amber); background:rgba(245,158,11,0.08); }
+  .refresh-btn { margin-left:auto; background:none; border:1px solid var(--border); color:var(--muted); font-family:var(--font-mono); font-size:11px; padding:6px 14px; cursor:pointer; transition:all 0.2s; }
+  .refresh-btn:hover { border-color:var(--amber-dim); color:var(--amber); }
+
+  /* Top pages table */
+  .top-pages { margin-bottom:28px; }
+  .top-pages table { width:100%; border-collapse:collapse; }
+  .top-pages th { font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); text-align:left; padding:8px 12px; border-bottom:1px solid var(--border); }
+  .top-pages th:last-child { text-align:right; }
+  .top-pages td { font-size:12px; padding:10px 12px; border-bottom:1px solid var(--border); }
+  .top-pages td:last-child { text-align:right; color:var(--amber); font-weight:700; }
+  .top-pages tr:last-child td { border-bottom:none; }
+
+  /* API key setup */
+  .api-setup { background:var(--surface); border:1px solid var(--amber-dim); padding:20px; margin-bottom:28px; text-align:center; }
+  .api-setup input { background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:var(--font-mono); font-size:12px; padding:8px 14px; width:360px; margin:12px 8px 0 0; }
+  .api-setup button { background:var(--amber); border:none; color:#000; font-family:var(--font-mono); font-size:12px; font-weight:700; padding:8px 18px; cursor:pointer; margin-top:12px; }
+  .api-setup p { font-size:11px; color:var(--muted); margin-top:8px; }
+
+  .loading { color:var(--muted); font-size:12px; text-align:center; padding:40px; }
+  .error-msg { color:var(--red); font-size:11px; text-align:center; padding:12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">HairSystem<span>Finder</span></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">Operations Dashboard</div>
+  </div>
+  <div class="header-links">
+    <a href="https://hairsystemfinder.com" target="_blank">↗ Website</a>
+    <a href="https://cloud.umami.is/share/OopCnn2OHu7TKI8S" target="_blank">↗ Full Analytics</a>
+    <a href="https://railway.com/project/701a3b9f-4b3a-4308-a129-39474aeff9fd" target="_blank">↗ Railway</a>
+    <a href="https://mail.google.com" target="_blank">↗ Gmail</a>
+  </div>
+</header>
+
+<div class="section-title">Quick Access</div>
+<div class="quick-links">
+  <a class="quick-link" href="https://hairsystemfinder.com" target="_blank">
+    <strong>hairsystemfinder.com</strong>Main site
+  </a>
+  <a class="quick-link" href="https://hairsystemfinder.com/blog" target="_blank">
+    <strong>/blog</strong>10 city guides
+  </a>
+  <a class="quick-link" href="https://resend.com/emails" target="_blank">
+    <strong>Resend</strong>Email logs
+  </a>
+  <a class="quick-link" href="https://dash.cloudflare.com" target="_blank">
+    <strong>Cloudflare</strong>DNS + Email routing
+  </a>
+</div>
+
+<div class="section-title">Analytics — Live Data</div>
+
+<!-- API Key Setup (shown if no key saved) -->
+<div id="apiSetup" class="api-setup" style="display:none">
+  <div style="font-size:13px;color:var(--text);margin-bottom:4px">Enter your Umami Cloud API Key</div>
+  <p>Get it from <a href="https://cloud.umami.is/settings/api-keys" target="_blank" style="color:var(--amber)">cloud.umami.is → Settings → API Keys</a></p>
+  <div>
+    <input id="apiKeyInput" type="password" placeholder="umami_api_xxxxxxxx">
+    <button onclick="saveApiKey()">Save</button>
+  </div>
+  <p>Stored in your browser's localStorage only.</p>
+</div>
+
+<!-- Period selector -->
+<div id="periodBar" class="period-bar" style="display:none">
+  <button class="period-btn active" data-period="24h">24h</button>
+  <button class="period-btn" data-period="7d">7 days</button>
+  <button class="period-btn" data-period="30d">30 days</button>
+  <button class="period-btn" data-period="all">All time</button>
+  <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+</div>
+
+<!-- Stats cards -->
+<div id="statsGrid" class="analytics-grid" style="display:none">
+  <div class="stat-card"><div class="label">Pageviews</div><div class="value" id="statPageviews">—</div><div class="sub" id="statPageviewsSub"></div></div>
+  <div class="stat-card"><div class="label">Visitors</div><div class="value" id="statVisitors">—</div><div class="sub" id="statVisitorsSub"></div></div>
+  <div class="stat-card"><div class="label">Visits</div><div class="value" id="statVisits">—</div><div class="sub" id="statVisitsSub"></div></div>
+  <div class="stat-card"><div class="label">Bounce Rate</div><div class="value" id="statBounce">—</div><div class="sub" id="statBounceSub"></div></div>
+</div>
+
+<!-- Top pages -->
+<div id="topPages" class="top-pages panel" style="display:none">
+  <div class="section-title" style="margin-bottom:8px">Top Pages</div>
+  <table><thead><tr><th>Page</th><th>Views</th></tr></thead><tbody id="topPagesBody"></tbody></table>
+</div>
+
+<!-- Top referrers -->
+<div id="topReferrers" class="top-pages panel" style="display:none">
+  <div class="section-title" style="margin-bottom:8px">Top Referrers</div>
+  <table><thead><tr><th>Source</th><th>Visitors</th></tr></thead><tbody id="topReferrersBody"></tbody></table>
+</div>
+
+<div id="loadingMsg" class="loading" style="display:none">Loading analytics...</div>
+<div id="errorMsg" class="error-msg" style="display:none"></div>
+
+<div class="section-title">Project Status</div>
+<div class="panel">
+  <div class="status-row"><span><span class="dot green"></span>hairsystemfinder.com</span><span class="badge green">LIVE</span></div>
+  <div class="status-row"><span><span class="dot green"></span>Umami Analytics</span><span class="badge green">TRACKING</span></div>
+  <div class="status-row"><span><span class="dot green"></span>hello@hairsystemfinder.com → Gmail</span><span class="badge green">EMAIL ROUTING ON</span></div>
+  <div class="status-row"><span><span class="dot green"></span>Resend Domain</span><span class="badge green">VERIFIED</span></div>
+  <div class="status-row"><span><span class="dot green"></span>Blog / City Guides</span><span class="badge green">10 PAGES LIVE</span></div>
+  <div class="status-row"><span><span class="dot amber"></span>Cold Outreach</span><span class="badge amber">19 SENT · WAITING</span></div>
+  <div class="status-row"><span><span class="dot amber"></span>Salons with email</span><span class="badge amber">19 / 52</span></div>
+</div>
+
+<script>
+const WEBSITE_ID = 'cbd08d15-4ade-4819-a0d9-65a2718f190d';
+const API_BASE = 'https://api.umami.is';
+const STORAGE_KEY = 'umami_api_key';
+
+let currentPeriod = '24h';
+
+function getApiKey() {
+  return localStorage.getItem(STORAGE_KEY);
+}
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) return;
+  localStorage.setItem(STORAGE_KEY, key);
+  init();
+}
+
+function clearApiKey() {
+  localStorage.removeItem(STORAGE_KEY);
+  init();
+}
+
+function getDateRange(period) {
+  const now = Date.now();
+  const day = 86400000;
+  switch (period) {
+    case '24h': return { startAt: now - day, endAt: now };
+    case '7d':  return { startAt: now - 7 * day, endAt: now };
+    case '30d': return { startAt: now - 30 * day, endAt: now };
+    case 'all': return { startAt: new Date('2026-03-01').getTime(), endAt: now };
+    default:    return { startAt: now - day, endAt: now };
+  }
+}
+
+async function apiFetch(endpoint, params = {}) {
+  const apiKey = getApiKey();
+  const url = new URL(`${API_BASE}${endpoint}`);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+
+  const res = await fetch(url, {
+    headers: { 'x-umami-api-key': apiKey, 'Accept': 'application/json' }
+  });
+  if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      clearApiKey();
+      throw new Error('API key invalid. Please re-enter.');
+    }
+    throw new Error(`API error: ${res.status}`);
+  }
+  return res.json();
+}
+
+async function loadData() {
+  const { startAt, endAt } = getDateRange(currentPeriod);
+
+  document.getElementById('loadingMsg').style.display = 'block';
+  document.getElementById('errorMsg').style.display = 'none';
+
+  try {
+    const [stats, pages, referrers] = await Promise.all([
+      apiFetch(`/v1/websites/${WEBSITE_ID}/stats`, { startAt, endAt }),
+      apiFetch(`/v1/websites/${WEBSITE_ID}/metrics`, { startAt, endAt, type: 'url', limit: 10 }),
+      apiFetch(`/v1/websites/${WEBSITE_ID}/metrics`, { startAt, endAt, type: 'referrer', limit: 10 })
+    ]);
+
+    // Stats cards
+    document.getElementById('statPageviews').textContent = (stats.pageviews || 0).toLocaleString();
+    document.getElementById('statVisitors').textContent = (stats.visitors || 0).toLocaleString();
+    document.getElementById('statVisits').textContent = (stats.visits || 0).toLocaleString();
+
+    const bounceRate = stats.visits > 0 ? Math.round((stats.bounces / stats.visits) * 100) : 0;
+    document.getElementById('statBounce').textContent = bounceRate + '%';
+
+    // Avg time
+    const avgTime = stats.visits > 0 ? Math.round(stats.totaltime / stats.visits) : 0;
+    document.getElementById('statVisitsSub').textContent = `avg ${avgTime}s / visit`;
+
+    document.getElementById('statsGrid').style.display = 'grid';
+
+    // Top pages
+    const pagesBody = document.getElementById('topPagesBody');
+    pagesBody.innerHTML = '';
+    if (pages && pages.length > 0) {
+      pages.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${escapeHtml(p.x)}</td><td>${p.y}</td>`;
+        pagesBody.appendChild(tr);
+      });
+      document.getElementById('topPages').style.display = 'block';
+    }
+
+    // Top referrers
+    const refBody = document.getElementById('topReferrersBody');
+    refBody.innerHTML = '';
+    if (referrers && referrers.length > 0) {
+      referrers.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${escapeHtml(r.x || '(direct)')}</td><td>${r.y}</td>`;
+        refBody.appendChild(tr);
+      });
+      document.getElementById('topReferrers').style.display = 'block';
+    }
+
+    document.getElementById('loadingMsg').style.display = 'none';
+  } catch (err) {
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('errorMsg').style.display = 'block';
+    document.getElementById('errorMsg').textContent = err.message;
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// Period buttons
+document.querySelectorAll('.period-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentPeriod = btn.dataset.period;
+    loadData();
+  });
+});
+
+function init() {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    document.getElementById('apiSetup').style.display = 'block';
+    document.getElementById('periodBar').style.display = 'none';
+    document.getElementById('statsGrid').style.display = 'none';
+    document.getElementById('topPages').style.display = 'none';
+    document.getElementById('topReferrers').style.display = 'none';
+  } else {
+    document.getElementById('apiSetup').style.display = 'none';
+    document.getElementById('periodBar').style.display = 'flex';
+    loadData();
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
