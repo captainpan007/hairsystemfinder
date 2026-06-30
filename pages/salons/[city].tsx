@@ -3,6 +3,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useState } from 'react';
 import salonsData from '@/data/salons.json';
+import { trackEvent } from '@/lib/analytics';
 
 interface Salon {
   id: string;
@@ -72,7 +73,10 @@ export default function CityPage({ city, cityDisplay, salons }: CityPageProps) {
           <div className="flex flex-wrap gap-3 mb-8">
             <select
               value={serviceFilter}
-              onChange={(e) => setServiceFilter(e.target.value)}
+              onChange={(e) => {
+                setServiceFilter(e.target.value);
+                trackEvent('filter_change', { city, filter: 'service', value: e.target.value || 'all' });
+              }}
               className="px-3 py-2 bg-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
               <option value="">All Services</option>
@@ -83,7 +87,10 @@ export default function CityPage({ city, cityDisplay, salons }: CityPageProps) {
 
             <select
               value={outsideFilter}
-              onChange={(e) => setOutsideFilter(e.target.value)}
+              onChange={(e) => {
+                setOutsideFilter(e.target.value);
+                trackEvent('filter_change', { city, filter: 'outside_systems', value: e.target.value || 'all' });
+              }}
               className="px-3 py-2 bg-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
               <option value="">Outside Systems</option>
@@ -93,7 +100,10 @@ export default function CityPage({ city, cityDisplay, salons }: CityPageProps) {
 
             <select
               value={priceFilter}
-              onChange={(e) => setPriceFilter(e.target.value)}
+              onChange={(e) => {
+                setPriceFilter(e.target.value);
+                trackEvent('filter_change', { city, filter: 'price', value: e.target.value || 'all' });
+              }}
               className="px-3 py-2 bg-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
               <option value="">Any Price</option>
@@ -112,6 +122,7 @@ export default function CityPage({ city, cityDisplay, salons }: CityPageProps) {
                 <Link
                   key={salon.id}
                   href={`/salons/${city}/${salon.slug}`}
+                  onClick={() => trackEvent('salon_card_click', { city, salon: salon.slug })}
                   className="block bg-gray-800 rounded-lg p-5 hover:bg-gray-750 hover:ring-1 hover:ring-blue-400 transition-all"
                 >
                   <div className="flex justify-between items-start mb-2">

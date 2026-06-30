@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import salonsData from '@/data/salons.json';
+import { trackEvent } from '@/lib/analytics';
 
 interface Salon {
   id: string;
@@ -50,6 +51,7 @@ const SYSTEM_LABELS: Record<string, string> = {
 
 export default function SalonPage({ salon }: SalonPageProps) {
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(salon.address)}`;
+  const trackingPayload = { city: salon.city, salon: salon.slug };
 
   return (
     <>
@@ -152,6 +154,7 @@ export default function SalonPage({ salon }: SalonPageProps) {
             {salon.phone && (
               <a
                 href={`tel:${salon.phone}`}
+                onClick={() => trackEvent('phone_click', trackingPayload)}
                 className="inline-flex items-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
               >
                 Call {salon.phone}
@@ -162,6 +165,7 @@ export default function SalonPage({ salon }: SalonPageProps) {
                 href={salon.booking_url}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackEvent('booking_click', trackingPayload)}
                 className="inline-flex items-center gap-2 px-5 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition-colors"
               >
                 Book Online
@@ -172,6 +176,7 @@ export default function SalonPage({ salon }: SalonPageProps) {
                 href={salon.website}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackEvent('website_click', trackingPayload)}
                 className="inline-flex items-center gap-2 px-5 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition-colors"
               >
                 Website
@@ -181,6 +186,7 @@ export default function SalonPage({ salon }: SalonPageProps) {
               href={mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent('map_click', trackingPayload)}
               className="inline-flex items-center gap-2 px-5 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition-colors"
             >
               View on Google Maps
@@ -256,6 +262,7 @@ function ClaimSection({ salonName, salonId }: { salonName: string; salonId: stri
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus('sending');
+    trackEvent('claim_submit', { salon: salonId });
     const form = e.currentTarget;
     const data = {
       name: (form.elements.namedItem('claimName') as HTMLInputElement).value,
@@ -296,7 +303,10 @@ function ClaimSection({ salonName, salonId }: { salonName: string; salonId: stri
       </p>
       {!showForm ? (
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => {
+            trackEvent('claim_open', { salon: salonId });
+            setShowForm(true);
+          }}
           className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
         >
           Claim This Listing
@@ -373,6 +383,7 @@ function ReviewSection({ salonId }: { salonId: string }) {
     e.preventDefault();
     if (rating === 0) return;
     setSubmitting(true);
+    trackEvent('review_submit', { salon: salonId, rating, visited, acceptsOutside });
     try {
       const res = await fetch('/api/reviews', {
         method: 'POST',
@@ -421,7 +432,10 @@ function ReviewSection({ salonId }: { salonId: string }) {
         </h2>
         {!showForm && submitStatus !== 'sent' && (
           <button
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              trackEvent('review_open', { salon: salonId });
+              setShowForm(true);
+            }}
             className="text-sm px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
           >
             Write a Review

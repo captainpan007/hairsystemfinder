@@ -1,5 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+function escapeHtml(value: unknown) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -34,10 +43,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         subject: `[HairSystemFinder] Claim Request: ${salonName}`,
         html: `
           <h2>New Claim Request</h2>
-          <p><strong>Salon:</strong> ${salonName} (${salonId})</p>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+          <p><strong>Salon:</strong> ${escapeHtml(salonName)} (${escapeHtml(salonId)})</p>
+          <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+          <p><strong>Phone:</strong> ${escapeHtml(phone || 'Not provided')}</p>
           <p>Review and update salons.json if verified.</p>
         `,
       }),

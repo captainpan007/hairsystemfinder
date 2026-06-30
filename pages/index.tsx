@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import { trackEvent } from '@/lib/analytics';
 
 const POPULAR_CITIES = [
   { name: 'New York', slug: 'new-york' },
@@ -27,7 +28,12 @@ export default function Home() {
     if (!searchQuery.trim()) return;
     let slug = searchQuery.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     slug = CITY_ALIASES[slug] || slug;
+    trackEvent('city_search', { query: searchQuery.trim(), destination: slug });
     router.push(`/salons/${slug}`);
+  };
+
+  const handleStudioInquiry = () => {
+    trackEvent('studio_inquiry_click', { source: 'home' });
   };
 
   return (
@@ -74,7 +80,7 @@ export default function Home() {
               Browse All
             </a>
             <span>·</span>
-            <a href="#subscribe" className="hover:text-white transition-colors underline">
+            <a href="#for-studios" onClick={handleStudioInquiry} className="hover:text-white transition-colors underline">
               Add Your Studio
             </a>
             <span>·</span>
@@ -128,6 +134,34 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Studio owner CTA */}
+        <section id="for-studios" className="py-16 px-4 border-t border-gray-700">
+          <div className="max-w-3xl mx-auto grid gap-8 md:grid-cols-[1.4fr_1fr] md:items-center">
+            <div>
+              <p className="text-blue-300 text-sm font-medium mb-2">For studio owners</p>
+              <h2 className="text-2xl font-bold mb-3">Claim your listing before paid placement opens.</h2>
+              <p className="text-gray-300 mb-4">
+                Update your services, booking link, pricing range, and whether you work with outside hair systems.
+                Early verified studios can test featured placement free during the beta.
+              </p>
+              <div className="flex flex-wrap gap-3 text-sm text-gray-400">
+                <span>Free claim review</span>
+                <span>|</span>
+                <span>No contract</span>
+                <span>|</span>
+                <span>Built for hair system clients</span>
+              </div>
+            </div>
+            <a
+              href="mailto:hello@hairsystemfinder.com?subject=Claim%20my%20HairSystemFinder%20listing&body=Studio%20name%3A%0ACity%3A%0AWebsite%3A%0ABooking%20link%3A%0AWhat%20should%20we%20update%3A"
+              onClick={handleStudioInquiry}
+              className="block rounded-lg border border-blue-500 bg-blue-600 px-6 py-4 text-center font-semibold text-white hover:bg-blue-700 transition-colors"
+            >
+              Claim or update your listing
+            </a>
+          </div>
+        </section>
+
         {/* Email Subscribe */}
         <section id="subscribe" className="py-16 px-4 border-t border-gray-700">
           <div className="max-w-md mx-auto text-center">
@@ -142,6 +176,7 @@ export default function Home() {
                   e.preventDefault();
                   if (!subEmail) return;
                   setSubStatus('sending');
+                  trackEvent('subscriber_submit', { source: 'home' });
                   try {
                     const res = await fetch('/api/subscribe', {
                       method: 'POST',
@@ -181,7 +216,7 @@ export default function Home() {
             <span>·</span>
             <a href="/blog" className="hover:text-gray-300 transition-colors underline">City Guides</a>
             <span>·</span>
-            <a href="#subscribe" className="hover:text-gray-300 transition-colors underline">Add Your Studio</a>
+            <a href="#for-studios" onClick={handleStudioInquiry} className="hover:text-gray-300 transition-colors underline">Add Your Studio</a>
             <span>·</span>
             <a href="mailto:hello@hairsystemfinder.com" className="hover:text-gray-300 transition-colors underline">Contact</a>
           </div>
